@@ -1,0 +1,147 @@
+<div class="container mt-4">
+  <!-- Add/Edit Form -->
+  <div *ngIf="isFormVisible" class="card shadow-lg p-4 mb-4">
+    <h3 class="text-center mb-4">{{ isEditMode ? 'Edit Department' : 'Add New Department' }}</h3>
+    <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()">
+      <div class="form-group mb-3">
+        <label for="departmentName" class="form-label">Department Name</label>
+        <input
+          id="departmentName"
+          formControlName="departmentName"
+          class="form-control shadow-sm"
+          placeholder="Enter department name"
+        />
+
+        <!-- Validation messages for departmentName -->
+        <div class="text-danger" *ngIf="f['departmentName'].invalid && (f['departmentName'].touched || f['departmentName'].dirty)">
+          <div *ngIf="f['departmentName'].errors?.['required']">Department Name is required.</div>
+          <div *ngIf="f['departmentName'].errors?.['minlength']">Department Name must be at least 3 characters long.</div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-3">
+        <button type="submit" class="btn btn-success" [disabled]="departmentForm.invalid">Save</button>
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Table Display -->
+  <div *ngIf="!isFormVisible" class="card shadow-lg p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h3>Departments</h3>
+      <button class="btn btn-outline-primary" (click)="onAdd()">Add New Department</button>
+    </div>
+    <table class="table table-hover table-bordered table-striped mt-3">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Department Name</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let department of departmentList">
+          <td>{{ department.departmentIDP }}</td>
+          <td>{{ department.departmentName }}</td>
+          <td class="d-flex gap-2">
+            <button class="btn btn-info btn-sm" (click)="onEdit(department)">Edit</button>
+            <button class="btn btn-danger btn-sm" (click)="onDelete(department.departmentIDP)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<div class="container mt-4">
+  <!-- Add/Edit Form -->
+  <div *ngIf="isFormVisible" class="card shadow-lg p-4 mb-4">
+    <h3 class="text-center mb-4">{{ isEditMode ? 'Edit Department' : 'Add New Department' }}</h3>
+    <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()">
+      <div class="form-group mb-3">
+        <label for="departmentName" class="form-label">Department Name</label>
+        <input
+          id="departmentName"
+          formControlName="departmentName"
+          class="form-control shadow-sm"
+          placeholder="Enter department name"
+        />
+
+        <!-- Validation messages for departmentName -->
+        <div class="text-danger" *ngIf="f['departmentName'].invalid && (f['departmentName'].touched || f['departmentName'].dirty)">
+          <div *ngIf="f['departmentName'].errors?.['required']">Department Name is required.</div>
+          <div *ngIf="f['departmentName'].errors?.['minlength']">Department Name must be at least 3 characters long.</div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end gap-3">
+        <button type="submit" class="btn btn-success" [disabled]="departmentForm.invalid">Save</button>
+        <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+   <!-- Table Display -->
+   <div *ngIf="!isFormVisible" class="p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <h3>Departments</h3>
+      <button class="btn btn-outline-primary" (click)="onAdd()">Add New Department</button>
+    </div>
+    <div class="container mt-3">
+
+      <!-- Search + Page Size -->
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search department"
+            [(ngModel)]="searchValue"
+            (ngModelChange)="onSearch()"
+          />
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option *ngFor="let size of pageSizes" [value]="size">{{ size }} per page</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 📋 NGX-DATATABLE -->
+      <ngx-datatable
+        class="material"
+        [rows]="departmentPagingList"
+        [columnMode]="'force'"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="'auto'"
+        [limit]="pageSize"
+        [offset]="currentPage - 1"
+        [count]="totalRecords"
+        [externalPaging]="true"
+        (page)="onPage($event)"
+      >
+        <!-- Index Column -->
+        <ngx-datatable-column name="#" [width]="50">
+          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+            {{ (currentPage - 1) * pageSize + rowIndex + 1 }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Department Name -->
+        <ngx-datatable-column name="Department Name" prop="departmentName"></ngx-datatable-column>
+
+        <!-- Actions -->
+        <ngx-datatable-column name="Action" [width]="180">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button class="btn btn-sm btn-primary me-2" (click)="onEdit(row)">Edit</button>
+            <button class="btn btn-sm btn-danger" (click)="onDelete(row)">Delete</button>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+
+    </div>
+  </div>
+</div>
